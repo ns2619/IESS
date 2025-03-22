@@ -1,0 +1,267 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<script type="text/javascript" src="form_validation.js"></script>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>Internal Exam Scheduling System</title>
+<meta name="keywords" content="" />
+<meta name="description" content="" />
+<link href="style.css" rel="stylesheet" type="text/css" media="screen" />
+
+<script>
+
+// handling ajax response
+function handleHttpResponse()
+{
+	if(httpxx.readyState == 4)
+	{
+		if(httpxx.status == 200)
+		{
+			var result=httpxx.responseText;
+			
+			document.getElementById("ajex").innerHTML=result;
+		}
+	}
+}
+//var url="showrec.phpinm=";
+function updaterec()
+{
+	var inm=document.getElementById("course").value
+	
+	httpxx.open("POST" ,"showsem.php?course="+inm,true);
+	httpxx.onreadystatechange =handleHttpResponse;
+	httpxx.send(null);
+
+}
+
+// make ajax request
+function GetXMLHttpRequest()
+{
+	var object=null;
+	if(window.XMLHttpRequest)
+	{
+		object=new XMLHttpRequest();
+	}
+	else if(window.ActiveXObject)
+	{
+		try
+		{
+			object=new ActiveXObject("MSXML2.XMLHTTP");
+		}
+		catch(e)
+		{
+		}
+		if(object==null)
+		{
+			try
+			{
+				object=new ActiveXobject("Microsoft.XMLHTTP");
+			}
+			catch(e)
+			{
+			}
+}
+	}
+	if(object==null)
+	{
+		alert("your Window Not Support Ajax")
+	}
+	return(object)
+
+}
+var httpxx = GetXMLHttpRequest();
+</script>
+
+
+
+
+<link rel="stylesheet" type="text/css" media="all" href="jsdatepick-calendar/jsDatePick_ltr.min.css" />
+    <script type="text/javascript" src="jsdatepick-calendar/jsDatePick.min.1.3.js"></script>
+	</head>
+		<script type="text/javascript" language="javascript">
+	window.onload = function(){
+		new JsDatePick({
+			useMode:2,
+			target:"cdt",
+			
+			dateFormat:"%d-%M-%Y"
+		});
+	};
+</script> 
+
+
+<body>
+
+
+
+
+<div id="wrapper">
+	<?php
+	
+		include("hedder2.php");
+	?>
+	<!-- end #logo -->
+	<div id="page">
+		<div id="page-bgtop">
+			<div id="content">
+				<div class="post">
+				
+				
+				
+					
+					<form name="frm" id="frm" method="post" action="" onSubmit="return validate_result();;">
+					
+						
+						
+						
+						
+						<caption><?php
+							
+							include("connect.php");
+									
+									$id="";
+									$result_name="";
+									
+											
+											$roll_no="";
+											$result_status="";
+											
+								
+							if(isset($_REQUEST["msg"]))
+							echo $_REQUEST["msg"];
+							if(isset($_POST["result_name"])){	
+							
+										$rid=$_POST["result_name"];
+										 $sql="SELECT * FROM result WHERE result_id =$rid";
+											$res=mysqli_query($con,$sql);
+								    	while($row=mysqli_fetch_assoc($res)){
+									 	$result_id=$row["result_id"];
+										$result_name=$row["result_name"];
+										
+										$roll_no=$row["roll_no"];
+										$result_status=$row["result_status"];
+										
+									}		
+							}
+						?>
+						<?php
+						if(isset($_REQUEST['Delete']))
+						{
+							$sql="delete from result where result_id='".$_REQUEST['Delete']."'";
+							$i=mysqli_query($con,$sql);
+							$msg="";
+							if($i>0){
+									$msg="Delete SuccessFully";
+									}
+							else
+							{
+									$msg="Delete Not SuccessFully";
+							}		
+										
+						}
+						
+						
+						?>
+						
+						<?php
+						
+						if(isset($_REQUEST['Update']))
+{
+	$update="update result set result_name='".$_REQUEST['result_name']."',roll_no='".$_REQUEST['roll_no']."',result_status='".$_REQUEST['result_status']."' where result_id='".$_REQUEST['rid']."'";
+	$up=mysqli_query($con,$update);
+	header("location:viewresult.php");
+}
+?>
+						
+						
+						</caption>
+						<a href="viewresult.php">View Result Detail</a><br/>
+						<a href="result.php" >Add Result Detail</a>
+						
+						
+    
+        
+        <p>&nbsp;</p>
+	
+		 <table width="100%" border="1" bgcolor='#EAEAFF' bordercolor='#0000CC'>
+			
+			<td align="center">Result Name</td>
+			<td align="center">Roll No</td>
+			<td align="center">Result</td>
+			
+			
+			<td width="25%" align="center">Operations</td>
+		  </tr>
+		  <?php
+		  		  $sel="select * from result ORDER BY result_id ASC";
+				  $qr1=mysqli_query($con,$sel);
+				  while($ans=mysqli_fetch_array($qr1))
+				  {
+				  ?>
+		  <tr>
+		  
+			
+			<?php
+				if(isset($_REQUEST['rid']))
+				{
+					if($_REQUEST['rid'] == $ans['result_id'])
+					{
+					?>
+				<td><input type="text" name="result_name" size="20" value="<?PHP echo $ans['result_name']; ?>" > </td>
+				<td><input type="text" name="roll_no" id="roll_no" size="20" value="<?PHP echo $ans['roll_no']; ?>"></td>
+				<td><input type="radio" name="result_status" id="result_status" value="Pass" value="<?PHP echo $ans['result_status']; ?>"> Pass
+					<input type="radio" name="result_status" id="result_status" value="Fail" value="<?PHP echo $ans['result_status']; ?>"> Fail  </td>
+								
+					
+					
+
+								
+					
+					
+					<td><input type="submit" name="Update" value="Update" />
+			<?php
+			continue;
+					}
+				}
+			 ?>
+			 
+			<td align="center"><?PHP echo $ans['result_name']; ?></td>
+			<td align="center"><?PHP echo $ans['roll_no']; ?></td>
+			<td align="center"><?PHP echo $ans['result_status']; ?></td>
+			
+			
+		
+					
+			<td align="center"><a href="viewresult.php?rid=<?php echo $ans['result_id']; ?>">Edit</a>/
+			<a href="viewresult.php?Delete=<?php echo $ans['result_id']; ?>">Delete</a></td>
+		  </tr>
+		  <?PHP
+				  }
+				  ?>
+		</table>
+		</td>
+		</tr>
+		</table>
+							
+
+					
+					<div class="entry">
+					</div>
+				</div>
+			</div>
+			<!-- end #content -->
+				<?php
+					include("exam_sub_co_ordinator_sidebar3.php");
+				?>
+			<!-- end #sidebar -->
+			<div style="clear: both;">&nbsp;</div>
+		</div>
+	</div>
+	<!-- end #page -->
+	<?php
+	
+		include("footer.php");
+		?>
+	<!-- end #footer -->
+</div>
+</body>
+</html>
